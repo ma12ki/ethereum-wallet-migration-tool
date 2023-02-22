@@ -1,15 +1,12 @@
-import { create } from "zustand";
+import { create } from 'zustand';
+
+import { IAsset } from '../types';
+import { scrapeAssets } from '../utils';
 
 interface IScanAssetsState {
   loading: boolean;
   loaded: boolean;
   assets: IAsset[];
-}
-
-interface IAsset {
-  address: string;
-  balance: number;
-  name: string;
 }
 
 interface IScanAssetsMethods {
@@ -21,7 +18,7 @@ interface IScanAssetsHook extends IScanAssetsState, IScanAssetsMethods {}
 const defaultState: IScanAssetsState = {
   loading: false,
   loaded: false,
-  assets: []
+  assets: [],
 };
 
 export const useScanAssetsStore = create<IScanAssetsState>(() => defaultState);
@@ -33,7 +30,7 @@ export const useScanAssetsMethods: IScanAssetsMethods = {
     useScanAssetsStore.setState({ loading: false, loaded: true, assets });
 
     return assets;
-  }
+  },
 };
 
 export function useScanAssets(): IScanAssetsHook {

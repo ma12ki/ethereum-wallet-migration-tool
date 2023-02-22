@@ -1,9 +1,9 @@
-import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { mainnet, goerli, arbitrum, arbitrumGoerli } from "wagmi/dist/chains";
-import { publicProvider } from "wagmi/dist/providers/public";
-import { InjectedConnector } from "wagmi/dist/connectors/injected";
+import '@rainbow-me/rainbowkit/styles.css';
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { configureChains, createClient, WagmiConfig } from 'wagmi';
+import { mainnet, goerli, arbitrum, arbitrumGoerli } from 'wagmi/chains';
+import { publicProvider } from 'wagmi/providers/public';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
 interface IProps {
   children: React.ReactNode;
@@ -15,14 +15,14 @@ const { chains, provider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Wallet Migration",
-  chains
+  appName: 'Wallet Migration',
+  chains,
 });
 
 const wagmiClient = createClient({
   autoConnect: true,
   connectors: [...connectors(), new InjectedConnector({ chains })],
-  provider
+  provider,
 });
 
 export default function WalletProvider({ children }: IProps) {
