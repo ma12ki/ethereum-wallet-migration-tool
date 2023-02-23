@@ -1,20 +1,25 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Typography, Button } from 'antd';
+import { Typography } from 'antd';
 
 import './styles.css';
 import WalletProvider from './WalletProvider';
-import ScanAndSelectAssets from './ScanAndSelectAssets';
+import { MigrateAssets, ScanAssets, SelectAssets } from './components';
 
 export default function App(): JSX.Element {
   return (
     <WalletProvider>
-      <div className='App'>
-        <Typography.Title level={3}>Step 1: Connect</Typography.Title>
+      <div className="App">
+        <Typography.Title level={3}>Ethereum Wallet Migration Tool</Typography.Title>
         <ConnectButton showBalance={true} />
-        <Typography.Title level={3}>
-          Step 2: Select assets to migrate
-        </Typography.Title>
-        <ScanAndSelectAssets />
+        <br />
+        <br />
+        <ScanAssets />
+        <br />
+        <br />
+        <SelectAssets />
+        <br />
+        <br />
+        <MigrateAssets />
       </div>
     </WalletProvider>
   );
