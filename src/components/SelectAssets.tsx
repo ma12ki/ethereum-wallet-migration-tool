@@ -42,15 +42,13 @@ export default function ScanAndSelectAssets() {
   const { assets, loaded } = useScanAssets();
   const { setSelectedAssets, assets: selectedAssets } = useSelectAssets();
   const { assetMigrations } = useMigrateAssets();
+  const erc20Assets = assets.filter((asset) => asset.kind === 'ERC20');
 
   const rowSelection = useMemo(
     () => ({
-      onChange: (selectedRowKeys: React.Key[], selectedRows: IAsset[]) => {
+      onChange: (allSelectedRowKeys: React.Key[], selectedRows: IAsset[]) => {
         setSelectedAssets(selectedRows);
       },
-      getChecboxProps: (record: IAsset) => ({
-        checked: !!selectedAssets.find((asset) => asset.address === record.address),
-      }),
     }),
     [selectedAssets]
   );
@@ -60,13 +58,16 @@ export default function ScanAndSelectAssets() {
       {isConnected && loaded && assetMigrations.length === 0 && (
         <div>
           <Typography.Title level={4}>Select Assets to Migrate</Typography.Title>
+          <i>Only ERC20 tokens are supported (other tokens are not visible in this list)</i>
           <Table
+            className="SelectAssetsTable"
             rowSelection={{
               type: 'checkbox',
               ...rowSelection,
             }}
+            rowClassName={(record) => (record.kind === 'ERC20' ? '' : 'disabled')}
             columns={columns}
-            dataSource={assets}
+            dataSource={erc20Assets}
             rowKey="address"
             pagination={false}
           />

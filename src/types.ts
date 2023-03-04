@@ -3,7 +3,7 @@ export interface IAsset {
   name: string;
   amount: number;
   value: number;
-  kind: 'ERC20' | 'ERC721' | 'ERC1155' | '-';
+  kind: 'ERC20' | 'ERC721' | 'ERC1155' | '-' | 'ETH';
 }
 
 export interface IAssetMigration extends IAsset {

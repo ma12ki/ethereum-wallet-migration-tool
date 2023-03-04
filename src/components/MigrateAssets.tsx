@@ -1,36 +1,41 @@
-import { Button, Checkbox, Form, Input, Spin } from 'antd';
-import { useCallback, useMemo } from 'react';
-import { useAccount } from 'wagmi';
+import { Button, Checkbox, Form, Input } from 'antd';
+import { useCallback, useState } from 'react';
+import { useAccount, useSigner } from 'wagmi';
 
-import { useMigrateAssets, useScanAssets, useSelectAssets } from '../hooks';
-import { MigrationStatus } from '../types';
-import EtherscanLink from './EtherscanLink';
+import { useMigrateAssets, useSelectAssets } from '../hooks';
+import MigrateAssetsModal from './MigrateAssetsModal';
 
 export default function MigrateAssets() {
-  const { address, isConnected } = useAccount();
+  const { address, connector } = useAccount();
+  const signerRes = useSigner();
   const { assets } = useSelectAssets();
-  const { assetMigrations, loading, migrate } = useMigrateAssets();
+  const { loading, migrate } = useMigrateAssets();
+  const [modalOpen, setModalOpen] = useState(false);
   const [form] = Form.useForm();
+  console.log(connector, signerRes);
 
   const handleMigrate = useCallback(async () => {
     const { targetAddress, migrateEth } = await form.validateFields();
 
+    setModalOpen(true);
+
     await migrate({
       assets,
-      sourceAddress: address!,
-      targetAddress,
+      from: address!,
+      to: targetAddress,
       migrateEth,
+      signer: signerRes.data!,
     });
-  }, [address]);
+  }, [assets, address, signerRes]);
 
   return (
     <div className="MigrateAssets">
       {assets.length > 0 && (
         <Form form={form}>
           <Form.Item name="targetAddress" rules={[{ required: true }]}>
-            <Input type="text" placeholder="Target address" />
+            <Input type="text" placeholder="Target address" style={{ width: '400px', textAlign: 'center' }} />
           </Form.Item>
-          <Form.Item name="migrateEth">
+          <Form.Item name="migrateEth" valuePropName="checked">
             <Checkbox>Migrate ETH too</Checkbox>
           </Form.Item>
           <Button size="large" type="primary" onClick={handleMigrate} loading={loading} disabled={loading}>
@@ -38,45 +43,7 @@ export default function MigrateAssets() {
           </Button>
         </Form>
       )}
-      <div className="Migrations">
-        {assetMigrations.map((asset) => (
-          <div>
-            <EtherscanLink hash={asset.address} type="address">
-              {asset.name}
-            </EtherscanLink>{' '}
-            <MigrationStatusIcon status={asset.status} />
-          </div>
-        ))}
-      </div>
+      <MigrateAssetsModal open={modalOpen} />
     </div>
   );
-}
-
-function MigrationStatusIcon({ status, txHash }: { status: MigrationStatus; txHash?: string }) {
-  const statusIcon = useMemo(() => {
-    switch (status) {
-      case 'pending': {
-        return <span>🕒</span>;
-      }
-      case 'migrating': {
-        return <Spin />;
-      }
-      case 'migrated': {
-        return (
-          <EtherscanLink hash={txHash!} type="tx">
-            ✅
-          </EtherscanLink>
-        );
-      }
-      case 'failed': {
-        return (
-          <EtherscanLink hash={txHash!} type="tx">
-            ❌
-          </EtherscanLink>
-        );
-      }
-    }
-  }, [status]);
-
-  return statusIcon;
 }
